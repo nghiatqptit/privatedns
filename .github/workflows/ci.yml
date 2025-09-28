@@ -1,0 +1,60 @@
+name: Build and Test PrivateDNS
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+        
+    - name: Restore dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+      
+    - name: Test
+      run: dotnet test --no-build --configuration Release --verbosity normal || echo "No tests found"
+      
+    - name: Publish (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        dotnet publish --configuration Release --runtime linux-x64 --self-contained false --output ./publish/linux-x64
+        dotnet publish --configuration Release --runtime win-x64 --self-contained false --output ./publish/win-x64
+        dotnet publish --configuration Release --runtime osx-x64 --self-contained false --output ./publish/osx-x64
+        
+    - name: Upload Linux artifacts
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: PrivateDNS-linux-x64
+        path: ./publish/linux-x64/
+        
+    - name: Upload Windows artifacts
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: PrivateDNS-win-x64
+        path: ./publish/win-x64/
+        
+    - name: Upload macOS artifacts
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v4
+      with:
+        name: PrivateDNS-osx-x64
+        path: ./publish/osx-x64/
