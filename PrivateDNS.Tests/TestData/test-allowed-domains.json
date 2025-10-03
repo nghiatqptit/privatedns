@@ -1,0 +1,12 @@
+[
+  "google.com",
+  "*.google.com",
+  "microsoft.com",
+  "*.microsoft.com",
+  "github.com",
+  "*.github.com",
+  "stackoverflow.com",
+  "*.stackoverflow.com",
+  "test-domain.com",
+  "*.test-domain.com"
+]

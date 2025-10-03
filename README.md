@@ -11,6 +11,7 @@ A DNS proxy server that filters domain requests based on a whitelist configurati
 - **JSON configuration**: Easy to modify allowed domains list
 - **Cross-platform management scripts**: Automated setup for Windows, Linux, and macOS
 - **System service support**: Install as Windows Service, systemd service, or macOS LaunchDaemon
+- **Comprehensive unit testing**: Full test coverage with performance benchmarks
 
 ## Quick Start
 
@@ -52,6 +53,55 @@ install-port-forwarding.bat
 ```bash
 sudo ./scripts/install-port-forwarding.sh
 ```
+
+## Testing
+
+The project includes comprehensive unit tests covering all major components.
+
+### Running Tests
+
+**Using Test Scripts:**
+```bash
+# Linux/macOS/Git Bash
+chmod +x scripts/run-tests.sh
+./scripts/run-tests.sh
+
+# Windows
+scripts\run-tests.bat
+```
+
+**Using dotnet CLI:**
+```cmd
+# Run all tests
+dotnet test PrivateDNS.Tests
+
+# Run with coverage
+dotnet test PrivateDNS.Tests --collect:"XPlat Code Coverage"
+
+# Run specific test category
+dotnet test PrivateDNS.Tests --filter "Category=Unit"
+```
+
+### Test Coverage
+
+The test suite includes:
+
+- **Unit Tests**: Individual component testing
+  - DNS Message parsing and serialization
+  - Domain configuration and matching logic
+  - DNS forwarding functionality
+  - Service lifecycle management
+
+- **Integration Tests**: End-to-end functionality
+  - Service registration and dependency injection
+  - Configuration loading and validation
+  - Full DNS processing pipeline
+
+- **Performance Tests**: Benchmarking and optimization
+  - DNS message processing speed
+  - Domain matching performance with large lists
+  - Memory usage optimization
+  - Concurrent access testing
 
 ## Configuration
 
@@ -154,6 +204,12 @@ The `scripts/` folder contains comprehensive management tools:
 | `uninstall-port-forwarding.sh/.bat` | Cross-platform | Remove port forwarding |
 | `check-port-forwarding.sh/.bat` | Cross-platform | Check port forwarding status |
 
+### Testing and Development
+| Script | Platform | Purpose |
+|--------|----------|---------|
+| `run-tests.sh/.bat` | Cross-platform | Run unit tests with coverage |
+| `setup-github.sh/.bat` | Cross-platform | Setup Git repository for GitHub |
+
 **Features:**
 - ? Cross-platform support (Windows, Linux, macOS)
 - ? Administrator/root privilege checking
@@ -197,21 +253,6 @@ sudo launchctl stop com.privateDNS.service
 tail -f /var/log/privateDNS.out
 ```
 
-## Testing
-
-```cmd
-# Test allowed domain
-nslookup google.com 127.0.0.1:5353
-
-# Test blocked domain
-nslookup blocked-site.com 127.0.0.1:5353
-# Should return 127.0.0.1
-
-# With port forwarding enabled:
-nslookup google.com 127.0.0.1
-nslookup blocked-site.com 127.0.0.1
-```
-
 ## Logging
 
 The application provides detailed logging showing:
@@ -242,6 +283,7 @@ Set log levels in `appsettings.json`:
 3. **DNS not resolving**: Check firewall settings and DNS configuration
 4. **Scripts not executable**: Run `chmod +x scripts/*.sh` on the script files
 5. **Service won't start**: Verify .NET 8 runtime is installed
+6. **Tests failing**: Ensure all NuGet packages are restored
 
 ### Platform-Specific Issues
 
@@ -266,7 +308,9 @@ Set log levels in `appsettings.json`:
 - **Linux systemd**: `sudo journalctl -u privateDNS -f`
 - **macOS LaunchDaemon**: `/var/log/privateDNS.out`
 
-## Architecture
+## Development
+
+### Project Structure
 
 ```
 PrivateDNS/
@@ -276,13 +320,40 @@ PrivateDNS/
 ?   ??? DnsForwarder.cs         # Upstream DNS forwarding
 ??? Models/
 ?   ??? DnsMessage.cs           # DNS protocol handling
+??? PrivateDNS.Tests/           # Unit test project
+?   ??? Models/                 # Model tests
+?   ??? Services/               # Service tests
+?   ??? Integration/            # Integration tests
+?   ??? Performance/            # Performance tests
+?   ??? TestData/              # Test configuration files
 ??? scripts/                    # Management scripts
 ?   ??? install-service.*       # Service installation
 ?   ??? install-port-forwarding.* # Port forwarding setup
-?   ??? check-*.*              # Status checking
+?   ??? run-tests.*            # Test execution
+?   ??? setup-github.*         # Git repository setup
 ??? appsettings.json           # Configuration
 ??? allowed-domains.json       # Domain whitelist
 ??? README.md                  # This file
+```
+
+### Building from Source
+
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/PrivateDNS.git
+cd PrivateDNS
+
+# Restore packages
+dotnet restore
+
+# Build the project
+dotnet build --configuration Release
+
+# Run tests
+./scripts/run-tests.sh  # or run-tests.bat on Windows
+
+# Run the application
+dotnet run
 ```
 
 ## Security Notes

@@ -1,0 +1,17 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.Hosting.Lifetime": "Information",
+      "PrivateDNS": "Debug"
+    }
+  },
+  "DnsProxy": {
+    "Port": 5353,
+    "UpstreamDnsServers": [
+      "8.8.8.8:53",
+      "1.1.1.1:53"
+    ],
+    "AllowedDomainsFile": "TestData/test-allowed-domains.json"
+  }
+}

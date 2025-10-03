@@ -366,5 +366,4 @@ MigrationBackup/
 .ionide/
 
 # Custom application files
-allowed-domains.json
 appsettings.Development.json

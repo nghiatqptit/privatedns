@@ -1,5 +1,3 @@
-using System.Net;
-
 namespace PrivateDNS.Services
 {
     public interface IDnsForwarder
